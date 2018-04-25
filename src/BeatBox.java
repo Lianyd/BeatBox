@@ -1,6 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
 import  javax.sound.midi.*;
+import java.io.*;
 import java.util.*;
 import java.awt.event.*;
 
@@ -48,6 +49,14 @@ public class BeatBox {
         JButton downTempo = new JButton("Tempo Down");
         downTempo.addActionListener(new MyDownTempoListener());
         buttonBox.add(downTempo);
+
+        JButton Serializelt = new JButton("serializelt");
+        Serializelt.addActionListener(new MySendListener());
+        buttonBox.add(Serializelt);
+
+        JButton Restore = new JButton("restore");
+        Restore.addActionListener(new MyReadInListener());
+        buttonBox.add(Restore);
 
         Box nameBox = new Box(BoxLayout.Y_AXIS);
         for (int i = 0; i < 16; i++) {
@@ -122,20 +131,23 @@ public class BeatBox {
         }catch (Exception e){e.printStackTrace();}
     }
 
-    // 四个监听的内部类
+    // 6个监听的内部类
     public class MyStartListener implements ActionListener{
+        @Override
         public void actionPerformed(ActionEvent a){
             buildTrackAndStart();
         }
     }
 
     public class MyStopListener implements ActionListener{
+        @Override
         public void actionPerformed(ActionEvent a){
             sequencer.stop();
         }
     }
 
     public class MyUpTempoListener implements ActionListener{     //节奏加快
+        @Override
         public void actionPerformed(ActionEvent a){
             float tempoFactor = sequencer.getTempoFactor();
             sequencer.setTempoFactor((float)(tempoFactor*1.03));
@@ -143,9 +155,56 @@ public class BeatBox {
     }
 
     public class MyDownTempoListener implements ActionListener{     // 节奏减慢
+        @Override
         public void actionPerformed(ActionEvent a){
             float tempoFactor = sequencer.getTempoFactor();
             sequencer.setTempoFactor((float)(tempoFactor*0.97));
+        }
+    }
+
+    public class MySendListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            boolean[] checkboxState = new boolean[256];
+            for (int i = 0; i < 256; i++){
+                JCheckBox check = (JCheckBox) checkboxList.get(i);
+                if (check.isSelected()){
+                    checkboxState[i] = true;
+                }
+            }
+
+            try{
+                FileOutputStream fileStream = new FileOutputStream(new File("Checkbox.ser"));
+                ObjectOutputStream os = new ObjectOutputStream(fileStream);
+                os.writeObject(checkboxState);
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public class MyReadInListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            boolean[] checkboxState = null;
+            try{
+                FileInputStream fileIn = new FileInputStream(new File("Checkbox.ser"));
+                ObjectInputStream is = new ObjectInputStream(fileIn);
+                checkboxState = (boolean[])is.readObject();
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+
+            for ( int i = 0; i < 256; i++){
+                JCheckBox check = (JCheckBox) checkboxList.get(i);
+                if (checkboxState[i]){
+                    check.setSelected(true);
+                }else {
+                    check.setSelected(false);
+                }
+            }
+            sequencer.stop();
+            buildTrackAndStart();
         }
     }
 
