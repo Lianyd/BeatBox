@@ -172,7 +172,6 @@ public class BeatBox {
                     checkboxState[i] = true;
                 }
             }
-
             try{
                 FileOutputStream fileStream = new FileOutputStream(new File("Checkbox.ser"));
                 ObjectOutputStream os = new ObjectOutputStream(fileStream);
@@ -190,7 +189,7 @@ public class BeatBox {
             try{
                 FileInputStream fileIn = new FileInputStream(new File("Checkbox.ser"));
                 ObjectInputStream is = new ObjectInputStream(fileIn);
-                checkboxState = (boolean[])is.readObject();
+                checkboxState = (boolean[]) is.readObject();
             }catch (Exception ex){
                 ex.printStackTrace();
             }
