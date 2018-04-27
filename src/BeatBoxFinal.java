@@ -261,13 +261,51 @@ public class BeatBoxFinal {
         }
     }
 
-    public void makeTracks(int [] list){
-        for (int i = 0; i < 16; i++){
-            int key =list[i];
+    public class RemoteReader implements Runnable{
+        boolean[] checkboxState = null;
+        String nameToShow = null;
+        Object obj = null;;
+        public void run (){
+            try {
+                while ((obj = in.readObject()) != null) {
+                    System.out.println("got an object from server");
+                    System.out.println(obj.getClass());
+                    checkboxState = (boolean[]) in.readObject();
+                    otherSeqsMap.put(nameToShow, checkboxState);
+                    listVector.add(nameToShow);
+                    incomingList.setListData(listVector);
+                }
+            }catch (Exception ex){ex.printStackTrace();}
+        }
+    }
 
-            if (key != 0){
-                track.add(makeEvent(144,9,key,100,i));
-                track.add(makeEvent(128,9,key,100,i+1));
+    public class MyPlayMineListener implements ActionListener{
+        public void actionPerformed(ActionEvent a){
+            if (mySequence != null){
+                sequence = mySequence;
+            }
+        }
+    }
+
+    public void changeSequence(boolean[] chechboxState){
+        for (int i = 0; i < 256; i++){
+            JCheckBox check = (JCheckBox)checkboxList.get(i);
+            if (chechboxState[i]){
+                check.setSelected(true);
+            }else {
+                check.setSelected(false);
+            }
+        }
+    }
+
+    public void makeTracks(ArrayList list){
+        Iterator it = list.iterator();
+        for (int i = 0; i < 16; i++){
+            Integer num = (Integer)it.next();
+            if (num != null){
+                int numKey = num.intValue();
+                track.add(makeEvent(144,9,numKey,100,i));
+                track.add(makeEvent(128,9,numKey,100,i+1));
             }
         }
     }
