@@ -36,7 +36,7 @@ public class BeatBoxFinal {
     int[] instruments = {35,42,46,38,49,39,50,60,70,72,64,56,58,47,67,63};   // 不同乐器的关键字
 
     public static void main (String[] args){
-        new BeatBoxFinal().startUp("I'm BOB");   // args[0] is your user ID/screen name
+        new BeatBoxFinal().startUp("BOB");   // args[0] is your user ID/screen name
     }
 
     public void startUp(String name){
